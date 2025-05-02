@@ -5,6 +5,12 @@ import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { ArrowUp, Plus } from "lucide-react";
 import { Wallet, ChartLine, Clock } from "@phosphor-icons/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 type Message = {
   type: "user" | "ai";
@@ -18,6 +24,8 @@ const ChatBot = () => {
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [displayedAiMessage, setDisplayedAiMessage] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedPool, setSelectedPool] = useState<string | null>(null);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +64,11 @@ const ChatBot = () => {
     }
   };
 
+  const openAddPositionDialog = (poolName?: string) => {
+    setSelectedPool(poolName || null);
+    setDialogOpen(true);
+  };
+
   // Typing effect for the latest AI message
   useEffect(() => {
     // Find the last AI message
@@ -92,7 +105,7 @@ const ChatBot = () => {
 
   return (
     <div className="h-full relative max-w-4xl mx-auto">
-      <div className="h-[calc(100vh-240px)] overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+      <div className="h-[calc(100vh-240px)] overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:&apos;none&apos;] [scrollbar-width:&apos;none&apos;]">
         {messages.length === 0 ? (
           <div className="flex justify-center mt-16 h-full mx-auto">
             <div className="flex flex-col gap-2">
@@ -201,6 +214,7 @@ const ChatBot = () => {
                               variant="default"
                               size="secondary"
                               className="mt-2 rounded-full"
+                              onClick={() => openAddPositionDialog(title)}
                             >
                               <Plus className="w-4 h-4" /> Add Position
                             </Button>
@@ -240,7 +254,11 @@ const ChatBot = () => {
         {/* Chat Input */}
         <div className="absolute bg-background bottom-4 left-0 w-full">
           <div className="flex items-center gap-2 mb-2">
-            <Button variant="secondary" size="secondary">
+            <Button 
+              variant="secondary" 
+              size="secondary"
+              onClick={() => openAddPositionDialog()}
+            >
               <ChartLine className="w-4 h-4" /> Add Position
             </Button>
             <Button variant="secondary" size="secondary">
@@ -276,6 +294,22 @@ const ChatBot = () => {
           </form>
         </div>
       </div>
+
+       {/* Add Position Dialog */}
+       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Add Position {selectedPool ? `for ${selectedPool}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-6">
+            <p className="text-center text-sub-text">
+              Dialog content will be added later
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
